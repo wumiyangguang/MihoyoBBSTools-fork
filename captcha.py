@@ -1,7 +1,7 @@
-from request import http,TimeoutError,RequestError
+from request import http
 import setting
 from loghelper import log
-import time
+
 
 api_url='http://api.rrocr.com/api/recognize.html' #接口地址
 appkey = '###################'       #接口appkey
@@ -41,9 +41,10 @@ def game_captcha(gt: str, challenge: str):
             return validate
         else:
         # 识别失败，返回None或其他提示
-        # log.warning(f"{result.get('msg')}")
+            log.warning(f"{result.get('msg')}")
             return None
-    except:
+    except Exception as e:
+        log.warning(f'出现错误：{e}')
         return None
 
 def bbs_captcha(gt: str, challenge: str):
@@ -63,9 +64,10 @@ def bbs_captcha(gt: str, challenge: str):
             return validate
         else:
         # 识别失败，返回None或其他提示
-        # log.warning(f"{result.get('msg')}")
+            log.warning(f"{result.get('msg')}")
             return None
-    except:
+    except Exception as e:
+        log.warning(f'出现错误：{e}')
         return None
 
 
