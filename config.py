@@ -96,7 +96,24 @@ def config_v9_update(data: dict):
     log.info("config已升级到: 9")
     return data
 
+def config_v11_1_update(data: dict):
+    global update_config_need
+    update_config_need = True
+    
+    # 检查是否存在 'rrocr_appkey' 字段，若不存在则添加
+    data['version'] = 11.1
+    if 'rrocr_appkey' not in data:
+        data['rrocr_appkey'] = {'appkey': ''}
+    else:
+        # 如果存在 'rrocr_appkey'，但没有 'appkey'，则添加
+        if 'appkey' not in data['rrocr_appkey']:
+            data['rrocr_appkey']['appkey'] = ''
 
+    # 将版本号更新为 11.1
+    data['version'] = 11.1
+    log.info("config已升级到: 11.1")
+    return data
+    
 def config_v9_update_to_v11(data: dict):
     global update_config_need
     update_config_need = True
@@ -160,6 +177,8 @@ def load_config(p_path=None):
             data = config_v9_update_to_v11(data)
         if data['version'] == 10:
             data = config_v10_update(data)
+        if data['version'] == 11:
+            data = config_v11_1_update(data)
         save_config(p_config=data)
     # 去除cookie最末尾的空格
     data["account"]["cookie"] = str(data["account"]["cookie"]).rstrip(' ')
