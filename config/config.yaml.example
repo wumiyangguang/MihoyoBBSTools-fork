@@ -105,3 +105,6 @@ competition:
     account: []
     checkin: false
     weekly: false
+rrocr:
+  #在这里填写人人码的appkey
+  appkey:
