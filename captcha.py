@@ -12,6 +12,7 @@ def app_key():#接口appkey
     appkey = config.config.get('rrocr',{}).get('appkey', None)
     return appkey
 
+appkey=app_key()
 '''
 def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
     while True:
