@@ -11,7 +11,7 @@ def app_key():#接口appkey
     config.load_config()
     appkey = config.config.get('rrocr',{}).get('appkey', None)
     return appkey
-    
+
 appkey = app_key()
 '''
 def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
@@ -32,7 +32,6 @@ def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
         '''
 
 def game_captcha(gt: str, challenge: str):
-    
     data = {
     'appkey': appkey,
     'gt': gt,
