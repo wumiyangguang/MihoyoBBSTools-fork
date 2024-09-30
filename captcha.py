@@ -36,7 +36,7 @@ def game_captcha(gt: str, challenge: str):
     'appkey': appkey,
     'gt': gt,
     'challenge': challenge,
-    'referer': setting.cn_game_is_signurl,
+    'referer': setting.cn_game_sign_url,
     'ip': '',
     'host': ''
 }
