@@ -12,7 +12,7 @@ def app_key():#接口appkey
     appkey = config.config.get('rrocr',{}).get('appkey', None)
     return appkey
     
-appkey = app_key
+appkey = app_key()
 '''
 def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
     while True:
@@ -80,5 +80,5 @@ def bbs_captcha(gt: str, challenge: str):
 
 
 if __name__ == "__main__":
-    test=game_captcha(gt='d019a22590a54475b8e30eeb2854aab9',challenge='92e65680ceb0554c2410eac3cdcde3d5')
+    print(app_key())
     #print(test.log)
