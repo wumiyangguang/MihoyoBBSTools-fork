@@ -31,14 +31,17 @@ def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
         time.sleep(retry_delay)  # 等待重试延迟时间
         '''
 
-def game_captcha(gt: str, challenge: str):
+def game_captcha(gt: str, challenge: str,header: dict):
+    #print(header)
+    headers = header.get('User-Agent')
     data = {
     'appkey': appkey,
     'gt': gt,
     'challenge': challenge,
     'referer': setting.cn_game_sign_url,
     'ip': '',
-    'host': ''
+    'host': '',
+    'useragent': headers
 }
     try:
         response = http.post(api_url,data=data)
@@ -49,19 +52,22 @@ def game_captcha(gt: str, challenge: str):
         else:
         # 识别失败，返回None或其他提示
             log.warning(f"{result.get('msg')}")
+            #print(result)
             return None
     except Exception as e:
         log.warning(f'出现错误：{e}')
         return None
 
-def bbs_captcha(gt: str, challenge: str):
+def bbs_captcha(gt: str, challenge: str,header: dict):
+    headers = header.get('User-Agent')
     data = {
     'appkey': appkey,
     'gt': gt,
     'challenge': challenge,
     'referer': setting.bbs_get_captcha,
     'ip': '',
-    'host': ''
+    'host': '',
+    'useragent': headers
 }
     try:
         response = http.post(api_url,data=data)
