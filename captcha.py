@@ -2,6 +2,7 @@ from request import http
 import setting
 from loghelper import log
 import config
+import urllib.parse
 
 
 
@@ -33,7 +34,7 @@ def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
 
 def game_captcha(gt: str, challenge: str,header: dict):
     #print(header)
-    headers = header.get('User-Agent')
+    headers = urllib.parse.quote(header.get('User-Agent'))
     data = {
     'appkey': appkey,
     'gt': gt,
@@ -59,7 +60,7 @@ def game_captcha(gt: str, challenge: str,header: dict):
         return None
 
 def bbs_captcha(gt: str, challenge: str,header: dict):
-    headers = header.get('User-Agent')
+    headers = urllib.parse.quote(header.get('User-Agent'))
     data = {
     'appkey': appkey,
     'gt': gt,
