@@ -90,7 +90,7 @@ def captcha_recognition(api_url, result_url, gt, challenge):
         'appkey': appkey,
         'gt': gt,
         'challenge': challenge,
-        'itemid': 388
+        'itemid': 37
     }
     result = send_post_request(api_url, data)
 
@@ -119,12 +119,12 @@ def captcha_recognition(api_url, result_url, gt, challenge):
                 log.warning(f"第 {attempt + 1} 次查询失败")
                 continue
 
-            if query_result.get("status") == 0 and query_result.get("msg") == "识别成功":
+            if query_result.get("status") == 1 and query_result.get("msg") == "识别成功":
                 validate = query_result["data"].get("validate")
-                log.info(f"验证码识别成功: validate={validate}")
+                log.info(f"验证码识别成功!")
                 return validate
 
-            elif query_result.get("status") == 1:  # 结果处理中
+            elif query_result.get("status") == 2:  # 结果处理中
                 log.info(f"第 {attempt + 1} 次查询：结果仍在处理中...")
                 continue
 
@@ -153,5 +153,6 @@ def bbs_captcha(gt: str, challenge: str):
     return captcha_recognition(api_url, result_url, gt, challenge)
 
 if __name__ == "__main__":
-    print(app_key())
+    captcha_recognition(api_url, result_url, "d019a22590a54475b8e30eeb2854aab9", "090892d6228ab138aabd937c90a6e978")
+    #print(game_captcha("d019a22590a54475b8e30eeb2854aab9", "b4712ebdbfc434cdb1b687bb5715952f"))
     #print(test.log)
