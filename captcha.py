@@ -1,47 +1,41 @@
 from request import http
 import setting
 from loghelper import log
-import config
-import urllib.parse
+import yaml
+import os
 
+def get_config_path():
+    path = os.path.dirname(os.path.realpath(__file__)) + "/config"
+    if os.getenv("Captcha_config_path") is not None:
+        path = os.getenv("Captcha_config_path")
+    return f"{path}/captcha-config.yaml"
 
+# 读取配置文件
+def load_config():
+    config_path = get_config_path()
+    with open(config_path, 'r') as file:
+        config_data = yaml.safe_load(file)
+    return config_data
 
-api_url='http://api.ttocr.com/api/recognize' #接口地址       
-
-def app_key():#接口appkey
-    config.load_config()
-    appkey = config.config.get('rrocr',{}).get('appkey', None)
+def app_key():
+    config_data = load_config()
+    appkey = config_data.get('ocr', {}).get('appkey', None)
     return appkey
 
+def api_url():
+    config_data = load_config()
+    api_url = config_data.get('ocr', {}).get('api_url', None)
+    return api_url
+
+api_url = api_url()
 appkey = app_key()
-'''
-def post_with_retry(api_url: str,data: dict,timeout=10,retry_delay = 5):
-    while True:
-        try:
-            response = http.post(api_url,data=data,timeout=timeout)
-            response.raise_for_status()  # 如果返回的状态码不是200，抛出HTTPError异常
-            result = response.json()
-            return result # 请求成功，返回response对象
-        except TimeoutError:
-            log.warning("请求超时，正在重试...")
-        except RequestError as e:
-            log.warning(f"请求失败：{e}")
-        except Exception as e:
-            log.warning(f"未知错误：{e}")
-            return None  # 如果是其他请求错误，退出循环
-        time.sleep(retry_delay)  # 等待重试延迟时间
-        '''
 
 def game_captcha(gt: str, challenge: str,header: dict):
-    #print(header)
-    #headers = urllib.parse.quote(header.get('User-Agent'))
     data = {
     'appkey': appkey,
     'gt': gt,
     'challenge': challenge,
-    'referer': setting.cn_game_sign_url,
-    'ip': '',
-    'host': ''
+    'itemid': 388
 }
     try:
         response = http.post(api_url,data=data)
@@ -64,9 +58,7 @@ def bbs_captcha(gt: str, challenge: str,header: dict):
     'appkey': appkey,
     'gt': gt,
     'challenge': challenge,
-    'referer': setting.bbs_get_captcha,
-    'ip': '',
-    'host': ''
+    'itemid': 388
 }
     try:
         response = http.post(api_url,data=data)
