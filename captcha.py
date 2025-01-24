@@ -6,7 +6,7 @@ import urllib.parse
 
 
 
-api_url='http://api.rrocr.com/api/recognize.html' #接口地址       
+api_url='http://api.ttocr.com/api/recognize' #接口地址       
 
 def app_key():#接口appkey
     config.load_config()
