@@ -8,7 +8,21 @@ def get_config_path():
     path = os.path.dirname(os.path.realpath(__file__)) + "/config"
     if os.getenv("Captcha_config_path") is not None:
         path = os.getenv("Captcha_config_path")
-    return f"{path}/captcha-config.yaml"
+    config_path = f"{path}/captcha-config.yaml"
+    
+    # 检查配置文件是否存在，如果不存在则生成一个默认的配置文件
+    if not os.path.exists(config_path):
+        default_config = {
+            'ocr': {
+                'appkey': 'your_default_appkey',
+                'api_url': 'your_default_api_url'
+            }
+        }
+        os.makedirs(path, exist_ok=True)
+        with open(config_path, 'w') as file:
+            yaml.dump(default_config, file)
+    
+    return config_path
 
 # 读取配置文件
 def load_config():
