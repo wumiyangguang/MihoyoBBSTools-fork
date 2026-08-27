@@ -108,3 +108,10 @@ app_token =
 uids = 
 topic_ids = 
 # UID 与 Topic_Id 选填，多个 UID 使用逗号分隔
+
+[onebot]
+url = 
+access_token = your_token_here
+# private 或 group
+type = private
+target_id = 123456789

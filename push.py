@@ -451,6 +451,48 @@ class PushHandler:
         else:
             log.error(f"WxPusher 推送失败：{response}")
             return 1
+    
+    def onebot(self, status_id, push_message):
+        """
+        OneBot V11 HTTP API 推送（支持私聊/群聊）
+        """
+        url = self.cfg.get("onebot", "url")
+        token = self.cfg.get("onebot", "access_token", fallback="")
+        msg_type = self.cfg.get("onebot", "type", fallback="private")
+
+        headers = {
+            "Content-Type": "application/json; charset=utf-8"
+        }
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+
+        target_id = self.cfg.getint("onebot", "target_id")
+
+        if msg_type == "group":
+            params = {
+                "group_id": target_id,
+                "message": get_push_title(status_id) + "\n" + push_message
+            }
+            action = "send_group_msg"
+        else:
+            params = {
+                "user_id": target_id,
+                "message": get_push_title(status_id) + "\n" + push_message
+            }
+            action = "send_private_msg"
+
+        try:
+            rep = self.http.post(
+                url=url,
+                headers=headers,
+                json={
+                    "action": action,
+                    "params": params
+                }
+            ).json()
+            log.info(f"推送结果：{rep.get('status')}")
+        except Exception as e:
+            log.error(f"推送失败：{e}")
 
     # 其他推送方法，例如 ftqq, pushplus 等, 和 telegram 方法相似
     # 在类内部直接使用 self.cfg 读取配置
@@ -492,4 +534,4 @@ def push(status, push_message):
 
 
 if __name__ == "__main__":
-    push(0, f'推送验证{int(time.time())}')
+    push(0, f'推送验证')
