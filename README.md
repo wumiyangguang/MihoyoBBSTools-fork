@@ -252,13 +252,13 @@ kubectl logs $(kubectl get pod -l app=mihoyo -o jsonpath="{.items[0].metadata.na
 定时类型：crontab
 定时规则：2 2 28 * *
 白名单：ql_main.py
-依赖文件：error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames
+依赖文件：error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames|web_activity
 ```
 
 方式 2：指令拉取
 
 ```sh
-ql repo https://github.com/Womsxd/MihoyoBBSTools.git "ql_main.py" "" "error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames"
+ql repo https://github.com/Womsxd/MihoyoBBSTools.git "ql_main.py" "" "error|mihoyo|log|push|req|set|tools|con|acc|captcha|main|gamecheckin|hoyo_checkin|competition|cloudgames|os_cloudgames|web_activity"
 ```
 
 ### 2.环境变量添加
@@ -409,6 +409,23 @@ Home Manager 支持 Linux 和 macOS 系统。
   };
 ```
 
+## 使用DaCapo运行
+
+1. 下载[DaCapo](https://github.com/Aues6uen11Z/DaCapo)发布版并安装
+2. 点击左下角齿轮图标，在“创建新实例”一栏选择从远程创建，填写以下内容并点击创建：
+   - 实例名称：随意
+   - 模板名称：随意
+   - 仓库地址：`https://github.com/Womsxd/MihoyoBBSTools`
+   - 本地路径：`repos`
+   - 分支：留空不填
+   - 模板路径：`.`
+3. 进入更新页面，点击右上角检查更新
+4. 进入通用页面，配置路径填写`./repos/MihoyoBBSTools/xxx.json`，xxx表示实例名自行修改
+5. 进入米游社页面，任务设置-命令填写`py dacapo_main.py xxx.json`，xxx和上一步保持一致
+6. 填写cookies等信息后即可开始运行
+
+> 多用户只需从已有模板创建新实例，使用不同的实例名重复4、5、6步的操作
+
 ## 使用的第三方库
 
 ~~requests~~: [GitHub](https://github.com/psf/requests) [pypi](https://pypi.org/project/requests/)
@@ -427,7 +444,6 @@ PyYAML: [GitHub](https://github.com/yaml/pyyaml) [pypi](https://pypi.org/project
 
 也**不会**处理使用`Github Actions`执行有关的 issues！
 
-
 ## Stargazers over time
 
 [![Stargazers over time](https://starchart.cc/Womsxd/MihoyoBBSTools.svg)](https://starchart.cc/Womsxd/MihoyoBBSTools)
@@ -436,8 +452,11 @@ PyYAML: [GitHub](https://github.com/yaml/pyyaml) [pypi](https://pypi.org/project
 
 [MIT License](https://github.com/Womsxd/MihoyoBBSTools/blob/master/LICENSE)
 
-
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FWomsxd%2FMihoyoBBSTools.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FWomsxd%2FMihoyoBBSTools?ref=badge_large)
+
+## DeepWiki
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com//Womsxd/MihoyoBBSTools)
 
 ## 鸣谢
 

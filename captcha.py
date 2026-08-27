@@ -139,18 +139,26 @@ def captcha_recognition(api_url, result_url, gt, challenge):
         return None
 
 
-def game_captcha(gt: str, challenge: str):
+def game_captcha(gt: str, challenge: str) -> dict:
     """
     游戏验证码识别模块。
+    成功返回 {"challenge": challenge, "validate": validate}，失败返回 None
     """
-    return captcha_recognition(api_url, result_url, gt, challenge)
+    validate = captcha_recognition(api_url, result_url, gt, challenge)
+    if validate is None:
+        return None
+    return {"challenge": challenge, "validate": validate}
 
 
-def bbs_captcha(gt: str, challenge: str):
+def bbs_captcha(gt: str, challenge: str) -> dict:
     """
     BBS 验证码识别模块。
+    成功返回 {"challenge": challenge, "validate": validate}，失败返回 None
     """
-    return captcha_recognition(api_url, result_url, gt, challenge)
+    validate = captcha_recognition(api_url, result_url, gt, challenge)
+    if validate is None:
+        return None
+    return {"challenge": challenge, "validate": validate}
 
 if __name__ == "__main__":
     captcha_recognition(api_url, result_url, "d019a22590a54475b8e30eeb2854aab9", "090892d6228ab138aabd937c90a6e978")

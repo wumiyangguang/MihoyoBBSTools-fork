@@ -1,6 +1,8 @@
 [setting]
 enable=true
-# 共有 cqhttp ftqq(sever酱) pushplus pushme telegram wecom dingrobot feishubot bark pushdeer gotify smtp(邮件推送) webhook qmsg(qq消息推送) WinToast(Win11通知)
+# 共有 cqhttp ftqq(sever酱) pushplus pushme telegram wecom dingrobot feishubot
+# bark pushdeer gotify smtp(邮件推送) webhook qmsg(qq消息推送) WinToast(Win11通知)
+# serverchan3
 push_server=pushplus
 # server酱 pushplus dingrobot 的推送token
 push_token=XXXXXX
@@ -17,9 +19,10 @@ url = https://push.i-i.me/
 
 [cqhttp]
 #cqhttp的服务端地址
-cqhttp_url=http://127.0.0.1:5000/send_private_msg
-#推送给谁
+cqhttp_url=http://127.0.0.1:5000/send_msg
+#推送给QQ号/群号（二选一，勿同时配置）
 cqhttp_qq=10001
+cqhttp_group=10002
 
 [telegram]
 api_url=api.telegram.org
@@ -110,8 +113,13 @@ topic_ids =
 # UID 与 Topic_Id 选填，多个 UID 使用逗号分隔
 
 [onebot]
-url = 
+url =
 access_token = your_token_here
 # private 或 group
 type = private
 target_id = 123456789
+
+[serverchan3]
+sendkey =
+# "tag1 | tag2"
+tags =

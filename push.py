@@ -1,4 +1,5 @@
 import os
+import re
 import hmac
 import time
 import base64
@@ -11,6 +12,7 @@ from loghelper import log
 from configparser import ConfigParser, NoOptionError
 
 title = {
+    -99: "「米游社脚本」依赖缺失",
     -2: "「米游社脚本」StatusID 错误",
     -1: "「米游社脚本」Config版本已更新",
     0: "「米游社脚本」执行成功!",
@@ -138,12 +140,24 @@ class PushHandler:
         """
         OneBot V11(CqHttp)协议推送
         """
+        qq = self.cfg.get('cqhttp', 'cqhttp_qq', fallback=None)
+        group = self.cfg.get('cqhttp', 'cqhttp_group', fallback=None)
+
+        if qq and group:
+            log.error("请只填写 cqhttp_qq 或 cqhttp_group 的其中一个，不要同时填写！")
+            return
+
+        data = {
+            "message": get_push_title(status_id) + "\r\n" + push_message
+        }
+        if qq:
+            data["user_id"] = int(qq)
+        if group:
+            data["group_id"] = int(group)
+
         self.http.post(
             url=self.cfg.get('cqhttp', 'cqhttp_url'),
-            json={
-                "user_id": self.cfg.getint('cqhttp', 'cqhttp_qq'),
-                "message": get_push_title(status_id) + "\r\n" + push_message
-            }
+            json=data
         )
 
     # 感谢 @islandwind 提供的随机壁纸api 个人主页：https://space.bilibili.com/7600422
@@ -156,10 +170,10 @@ class PushHandler:
 
         def get_background_url():
             try:
-                _image_url = self.http.get("https://api.iw233.cn/api.php?sort=random&type=json").json()["pic"][0]
+                _image_url = self.http.get("https://www.loliapi.com/acg/pc/").url
             except:
                 _image_url = "unable to get the image"
-                log.warning("获取随机背景图失败，请检查图片api")
+                log.warning("获取随机背景图失败，请检查图片 api")
             return _image_url
 
         def get_background_img_html(background_url):
@@ -170,7 +184,7 @@ class PushHandler:
         def get_background_img_info(background_url):
             if background_url:
                 return f'<p style="color: #fff;text-shadow:0px 0px 10px #000;">背景图片链接</p>\n' \
-                   f'<a href="{background_url}" style="color: #fff;text-shadow:0px 0px 10px #000;">{background_url}</a>'
+                       f'<a href="{background_url}" style="color: #fff;text-shadow:0px 0px 10px #000;">{background_url}</a>'
             return ""
 
         image_url = None
@@ -431,7 +445,7 @@ class PushHandler:
             from wxpusher import WxPusher
         except:
             log.error("WxPusher 模块未安装，请先执行pip install wxpusher")
-            return 1  
+            return 1
         app_token = self.cfg.get('wxpusher', 'app_token', fallback=None)
         uids = self.cfg.get('wxpusher', 'uids', fallback="").split(',')
         topic_ids = self.cfg.get('wxpusher', 'topic_ids', fallback="").split(',')
@@ -493,6 +507,22 @@ class PushHandler:
             log.info(f"推送结果：{rep.get('status')}")
         except Exception as e:
             log.error(f"推送失败：{e}")
+
+    def serverchan3(self, status_id, push_message):
+        sendkey = self.cfg.get('serverchan3', 'sendkey')
+        match = re.match(r'sctp(\d+)t', sendkey)
+        if match:
+            num = match.group(1)
+            url = f'https://{num}.push.ft07.com/send/{sendkey}.send'
+        else:
+            raise ValueError('Invalid sendkey format for sctp')
+        data = {
+            'title': get_push_title(status_id),
+            'desp': push_message,
+            'tags': self.cfg.get('serverchan3', 'tags', fallback='')
+        }
+        rep = self.http.post(url=url, json=data)
+        log.debug(rep.text)
 
     # 其他推送方法，例如 ftqq, pushplus 等, 和 telegram 方法相似
     # 在类内部直接使用 self.cfg 读取配置
