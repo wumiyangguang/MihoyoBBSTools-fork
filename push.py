@@ -468,45 +468,63 @@ class PushHandler:
     
     def onebot(self, status_id, push_message):
         """
-        OneBot V11 HTTP API 推送（支持私聊/群聊）
-        """
-        url = self.cfg.get("onebot", "url")
-        token = self.cfg.get("onebot", "access_token", fallback="")
-        msg_type = self.cfg.get("onebot", "type", fallback="private")
+        OneBot V11 HTTP API 推送（兼容 NapCat、LLOneBot、go-cqhttp 等协议端）
 
-        headers = {
-            "Content-Type": "application/json; charset=utf-8"
-        }
+        targets 格式：group_id=123456,user_id=654321（逗号分隔多个目标，自动区分群聊/私聊）
+        消息中的 @at=-1@（qmsg 的 @全员 语法）自动替换为 OneBot CQ 码 [CQ:at,qq=all]
+        """
+        base_url = (self.cfg.get("onebot", "url", fallback="") or "").rstrip("/")
+        targets = self.cfg.get("onebot", "targets", fallback="") or ""
+        token = self.cfg.get("onebot", "access_token", fallback="") or ""
+
+        if not base_url or not targets:
+            log.error("OneBot 未配置 url 或 targets，请检查 push.ini 配置")
+            return 1
+
+        text = get_push_title(status_id) + "\r\n" + push_message
+        # @全员 语法适配（纯文本级转换，不绑定业务逻辑）
+        text = text.replace("@at=-1@", "[CQ:at,qq=all]")
+
+        headers = {"Content-Type": "application/json; charset=utf-8"}
         if token:
             headers["Authorization"] = f"Bearer {token}"
 
-        target_id = self.cfg.getint("onebot", "target_id")
+        success_count = 0
+        for target in targets.split(","):
+            target = target.strip()
+            if target.startswith("group_id="):
+                endpoint, payload_key = "send_group_msg", "group_id"
+            elif target.startswith("user_id="):
+                endpoint, payload_key = "send_private_msg", "user_id"
+            else:
+                log.warning(f"OneBot 目标格式无效，跳过: {target}")
+                continue
 
-        if msg_type == "group":
-            params = {
-                "group_id": target_id,
-                "message": get_push_title(status_id) + "\n" + push_message
-            }
-            action = "send_group_msg"
-        else:
-            params = {
-                "user_id": target_id,
-                "message": get_push_title(status_id) + "\n" + push_message
-            }
-            action = "send_private_msg"
+            try:
+                chat_id = int(target.split("=", 1)[1])
+            except ValueError:
+                log.warning(f"OneBot 目标号码无效，跳过: {target}")
+                continue
 
-        try:
-            rep = self.http.post(
-                url=url,
-                headers=headers,
-                json={
-                    "action": action,
-                    "params": params
-                }
-            ).json()
-            log.info(f"推送结果：{rep.get('status')}")
-        except Exception as e:
-            log.error(f"推送失败：{e}")
+            payload = {payload_key: chat_id, "message": text}
+            try:
+                rep = self.http.post(
+                    url=f"{base_url}/{endpoint}",
+                    headers=headers,
+                    json=payload
+                )
+                data = rep.json()
+            except Exception as e:
+                log.error(f"OneBot 推送网络异常: {endpoint} - {e}")
+                continue
+
+            if data.get("status") == "ok" or data.get("retcode") == 0:
+                log.info(f"OneBot 推送成功: {payload_key}={chat_id}")
+                success_count += 1
+            else:
+                log.error(f"OneBot 推送失败: {payload_key}={chat_id}，响应: {data}")
+
+        return 0 if success_count > 0 else 1
 
     def serverchan3(self, status_id, push_message):
         sendkey = self.cfg.get('serverchan3', 'sendkey')

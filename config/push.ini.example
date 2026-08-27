@@ -113,11 +113,12 @@ topic_ids =
 # UID 与 Topic_Id 选填，多个 UID 使用逗号分隔
 
 [onebot]
+# OneBot V11 HTTP API 地址，如 http://127.0.0.1:3000
 url =
+# 推送目标，逗号分隔多个，group_id= 为群聊，user_id= 为私聊
+targets = group_id=123456789,user_id=123456789
+# 可选，协议端设置的 access_token
 access_token = your_token_here
-# private 或 group
-type = private
-target_id = 123456789
 
 [serverchan3]
 sendkey =
